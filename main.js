@@ -1,224 +1,459 @@
-/* variable declarations */
-var isplaying=false;
-var scheck=null;
-var slist =     ['https://dl.dropbox.com/s/5jyylqps64nyoez/Legends%20never%20die.mp3?dl=0',
-'https://dl.dropbox.com/s/x6f49cu1rdqnngu/Let%20Me%20Love%20You.mp3?dl=0',
-'https://dl.dropbox.com/s/e5y42cc90ugx09t/Believer.mp3?dl=0',
-'https://dl.dropbox.com/s/1m7gbqazma8e6dw/The%20World%20english%20cover.mp3?dl=0',
-'https://dl.dropbox.com/s/wgf8wo6ud7ezv45/Unravel.mp3?dl=0', 'https://dl.dropbox.com/s/rvlinjltssarwaw/I%20am%20kira.mp3?dl=0', 'https://dl.dropbox.com/s/byk8yxqy1jzxyx5/Obey%20me%20world.mp3?dl=0', 'https://dl.dropbox.com/s/c8rinnz3l7uerle/Kira%20vs%20zero.mp3?dl=0', 'https://dl.dropbox.com/s/1sw4ysdgmkb5dse/Salvation.mp3?dl=0'
-];
-var simg = ['https://i.imgur.com/iki9Pf8.jpg', 'https://i.imgur.com/dNPF8fK.jpg', 'https://i.imgur.com/MP9cRir.jpg', 'https://i.imgur.com/7CUyRzo.png', 'https://i.imgur.com/vWXjAVK.jpg', 'https://i.imgur.com/q85hkhY.jpg', 'https://i.imgur.com/5Fyhevf.jpg', 'https://i.imgur.com/YJsyjQR.jpg', 'https://i.imgur.com/EO1jTSe.jpg' ];
-var sname = ['Legends never die','Let me love you','Believer','The world (english cover)','Unravel', 'I am kira', 'Obey me world', 'Kira vs zero', 'Salvation'];
-/* end variable declarations */
+var markdown = {
+    // Michael Ermishin's Markdown module
+    htmlEntitiesMap: {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+        ' ': '&nbsp;'
+    },    
+    specToEntities: function(text) {
+    if(text[0]==="$"){return text.replaceAll('$','')}
+        var pattern = new RegExp('[' + Object.keys(this.htmlEntitiesMap).join('') + ']', 'g');
+        //return text.replace(pattern, k => this.htmlEntitiesMap[k]);
+        return text.replace(pattern, function (m) {
+            return markdown.htmlEntitiesMap[m];
+        });
+    },
+    entitiesToSpec: function(text) {
+        var entToSpecMap = Object.keys(this.htmlEntitiesMap).reduce(function(obj, key) {
+            obj[markdown.htmlEntitiesMap[key]] = key;
+            return obj;
+        }, {});
 
-function splay(){  
-    main2();
-    var inp=document.getElementsByTagName('input');
-    var aud=document.getElementById('aud');
-    var img=document.getElementById('img');
-    var imgr=document.getElementById('imgr');
-    /* Check which song is selected */
-    for(let i=0;i<inp.length;i++){
-        if(inp[i].checked){
-            var check = i;
-        }
+        var pattern = new RegExp(Object.keys(entToSpecMap).join('|'), 'g');
+        return text.replace(pattern, function (m) {
+            return entToSpecMap[m];
+        });
+        //return text.replace(pattern, k => entToSpecMap[k]);
     }
-    /* selected song's number is in check */
-    /* Play the selected song */
-    for(let i=0;i<inp.length;i++){
-        if(check==i){
-            if(scheck==i){
-                return;
-            }
-            if (isplaying) { 
-            document.getElementById('imgc').style.animationPlayState='paused';
-                aud.pause();
-                isplaying=false;
-            }     aud.setAttribute('src',slist[check]);
-    img.setAttribute('src',simg[check]);
-    imgr.setAttribute('src',simg[check]);
-            if(!isplaying) {
-            iprelod(); 
-            sprelod(); document.getElementById('imgc').style.animationPlayState='running';
-        img.onload=function(){
-            ilod();
-        }
-        aud.oncanplaythrough=function()
-            {
-                slod(check);
-            }
-                aud.play();
-                isplaying=true;
-            }
-            scheck=i;
-        }
+};
+
+Number.prototype.pad = function (n,str){
+        return Array(n-String(this).length+1).join(str||'0')+this;
+}
+
+function timeToDateString(time,sep){
+        // converts time from integer to HH:MM:ss - DD/MM/YYYY format
+        sep=sep || " - ";
+        var date = new Date(time);
+        var dateString = (date.getHours().pad(2)+":"+date.getMinutes().pad(2)+":"+date.getSeconds().pad(2)+sep+date.getDate()+"/"+(date.getMonth()+1)+"/"+(date.getYear()+1900));
+        return dateString;
+}
+
+function start(){
+    toastr.options={
+        "positionClass": "toast-top-left"
     }
-    /* End for */
-    /* Footer hide/show */
-    var footer1=document.getElementById('footer1');
-    var sc=document.getElementById('songContainer');
-    footer1.style.display="block";
-    sc.style.height=(innerHeight-161+"px");
-    /* End hide/show footer */
+    // find elements in the HTML page
+    with(document){
+        var night_mode=getElementById("night_mode");
+        var chat_login=getElementById("chat_login");
+        var input_username=getElementById("input_username");
+        var btn_login=getElementById("btn_login");
+        var btn_logout=getElementById("btn_logout");
+        var btn_online=getElementById("btn_online");
+        var post_controls=getElementById("post_controls");
+        var input_by=getElementById("input_by");
+        var input_body=getElementById("input_body");
+        var btn_post=getElementById("btn_post");
+        var btn_update=getElementById("btn_update");
+        var emoji_container=getElementById("emoji_container");
+        var messages=getElementById("messages");
+        var loader=getElementById("loader");
+    }
+    var d = {};
+    // our firebase reference variables
+    var db_ref=null;
+    var posts_ref=null;
+    var am_online=null;
+    var user_ref=null;
+    var id_buffer=null;
+    var username=null;
+    // our posts list
+    var posts=[];
+    var online_users=[];
+    var numUsers=0;
+    var previous=0;
+    var numPosts=0;
+    var MAX_MSGS=50;
+    var nightModeOn=false;
+    $.getJSON(u,function(data){
+        d = data;
+    });
+    init_firebase();
     
-    /* All about progress bar */
-    aud.addEventListener("timeupdate", function(event){
-        progress.style.width=((aud.currentTime / aud.duration) * 100)+"%";
-    }, false);
-    progressbar.addEventListener("mousedown", function(event){
-        var clickedPosition=event.clientX - event.target.offsetLeft;
-        aud.currentTime=(clickedPosition/event.target.offsetWidth)*aud.duration;
-    }, false);
-    /* Progress bar end */
-}
-
-/* First play function */
-function play(){
-    var play2=document.getElementById('play2');
-    var pause2=document.getElementById('pause2');
-    var play1=document.getElementById('play1');
-    var pause1=document.getElementById('pause1');
-    play2.style.display="none";
-    play1.style.display="none";
-    pause2.style.display="block";
-    pause1.style.display="block"; document.getElementById('imgc').style.animationPlayState='running';
-    aud.play();
-}
-/* First pause function */
-function pause(){
-    var play2=document.getElementById('play2');
-    var pause2=document.getElementById('pause2');
-    var play1=document.getElementById('play1');
-    var pause1=document.getElementById('pause1');
-    play2.style.display="block";
-    play1.style.display="block";
-    pause2.style.display="none";
-    pause1.style.display="none"; document.getElementById('imgc').style.animationPlayState='paused';
-    aud.pause();
-}
-
-/* Display / hide main1 or main2 */
-function main1(){
-    setTimeout(main1d,200);
-}
-function main2(){
-    setTimeout(main2d,200);
-}
-function main1d(){  
-document.getElementById('main1').style.display="block";  document.getElementById('main2').style.display="none";
-}
-function main2d(){
-    document.getElementById('main1').style.display="none";  document.getElementById('main2').style.display="block";
-}
-/* End display / hide main1 or main2 */
-
-
-/* Next function */
-function next(){
-    var inp=document.getElementsByTagName('input');
-    /* Check which song is selected */
-    for(let i=0;i<inp.length;i++){
-        if(inp[i].checked){
-            var check = i;
+    night_mode.onclick=function(){
+        return;
+        nightModeOn=!nightModeOn;
+        if(nightModeOn){
+            textColor="white";
+            backGroundColor="black";
+            document.body.style.backgroundColor="grey";
+            
+        }else{
+            textColor="black";
+            backGroundColor="white";
+            document.body.style.backgroundColor="lightblue";
+        }
+        var i,tags = document.getElementById("app").getElementsByTagName("*"),total = tags.length;
+        for ( i = 0; i < total; i++ ) {
+            tags[i].style.color = textColor;
+            tags[i].style.backgroundColor = backGroundColor;
         }
     }
-   /* selected song's number is in check */
-   
-   /* Select next song */
-   if(check==(slist.length-1)){
-       check=0;
-       inp[check].checked=true;
-   }
-   else{
-       check+=1;
-       inp[check].checked=true;
-   }
-   /* Selected next song inside check */
-   
-    var aud=document.getElementById('aud');
-    var img=document.getElementById('img'); 
-    var imgr=document.getElementById('imgr');
-        imgr.setAttribute('src',simg[check]);
-        img.setAttribute('src',simg[check]);
-    iprelod();
-        aud.setAttribute('src',slist[check]);
-    sprelod();
-    aud.oncanplaythrough=function(){
-        slod(check);
-    }
-    img.onload=function(){
-        ilod();
-    }
-    aud.play();
-}
-/* End next function */
+    
+    btn_login.onclick=function(evt){
+    
+        if(0){
+           toastr.error("Please enter user name!");
+           return;
+        }
+        if(0){
+           toastr.error("User name cannot be longer than 20 letters!");
+           return;
+        }
 
-/* Prev function */
-function prev(){
-    var inp=document.getElementsByTagName('input');
-    /* Check which song is selected */
-    for(let i=0;i<inp.length;i++){
-        if(inp[i].checked){
-            var check = i;
+       login();
+       refreshUI(posts);
+    }
+    btn_logout.onclick=function(){
+        logout();
+    }
+    btn_online.onclick=function(){
+        users="";
+        for(i=0;i<online_users.length;i++){
+           users+=online_users[i].name+" since "+timeToDateString(online_users[i].time)+"<br>"; 
+        }
+        $.alert({
+            title: 'Logged Users',
+            content: users
+        });
+    }
+    // post submit handler
+    btn_post.onclick=function(){
+       if(0){
+          toastr.error("Message body cannot be empty!");
+          return;
+       }
+       // retreive author and post body from HTML fields
+       post_data={
+          author:input_by.value,
+          body:input_body.value 
+       };
+       create_post(post_data);
+    }
+    
+    btn_update.onclick=function(){
+        switch_elements(btn_post,btn_update);
+        // apply the changes to the database
+        posts_ref.child(id_buffer).update({
+           body:input_body.value 
+        });
+  
+        id_buffer=null;
+        input_body.value="";
+        restoreScroll();
+    }
+    
+    function login(){
+    
+    switch_elements(btn_logout,btn_login);
+        switch_elements(post_controls,chat_login);
+        input_by.value=input_username.value;
+        username=input_username.value;
+        
+        am_online = db_ref.ref('.info/connected');
+        user_ref = firebase.database().ref('/connected/' + input_username.value);
+        // create listener when new user is logged in
+        
+            am_online.on('value', function(snapshot) {
+                if (!snapshot.val()) return;
+                user_ref.onDisconnect().remove();
+                user_ref.set(firebase.database.ServerValue.TIMESTAMP);
+            }); 
+    }
+    
+    function logout(){
+        switch_elements(btn_login, btn_logout);
+        switch_elements(chat_login,post_controls);
+        input_by.value="";
+       // user_ref.remove();
+        am_online=true;
+    }
+    
+    function init_firebase(){
+        // force web sockets to prevent XMLHttpRequest warning
+        firebase.database.INTERNAL.forceWebSockets();
+        // access our database
+        db_ref=firebase.database();
+        // access posts child in our database
+        posts_ref=db_ref.ref("posts");
+       
+       // attach a listener for database changes events
+       // on.("value",.....) means that every time a value inside posts is added/changed/deleted the getAllMessages function will be fired, receiving the latest snapshot from the server
+        posts_ref.orderByChild("createTime").on("value", getAllMessages, onError);
+        
+      db_ref.ref('connected').on('value', function(snapshot) {
+                online_users = [];
+                snapshot.forEach(function(child){
+                online_users.push({
+                    name: child.key,
+                    time: child.val()
+                })});
+    
+                btn_online.innerHTML="Online Users: "+online_users.length;
+
+if(online_users.length>numUsers){
+// sort the online users list by login time
+online_users.sort(function(a,b){return b.time-a.time})
+
+// display toastr of last user joined
+    toastr.info("User "+online_users[0].name+" Joined!");
+}
+numUsers=online_users.length;
+            });
+    }
+    
+    function onError(err){
+        console.log("Firebase 'on' error: "+err);
+    }
+    
+    function switch_elements(toShow, toHide){
+       toShow.style.display="inline-block";
+       toHide.style.display="none";
+    }
+    
+    function getAllMessages(snapshot){
+    // load all messages from the snapshot
+        posts=[];
+        // snapshot object holds updated data from the firebase server, and we need to extract it, notice that we access each field name as by child.val().<fieldName> when <fieldName> corresponds with the fields that were created in the create_post method
+        
+        snapshot.forEach(function(child) {
+            var data = null;
+            try{
+                data = {
+                    id:child.key,
+                    author: markdown.specToEntities(child.val().author),
+                    body:markdown.specToEntities(child.val().body),
+                    votes:(child.val().votes||[]),
+                    createTime: child.val().createTime
+                 }
+                 posts.push(data);
+             }catch(err){}
+        });
+        if(posts.length>0){
+        // if there are posts, refresh the UI
+           refreshUI(posts);
         }
     }
-   /* selected song's number is in check */
-   
-   /* Select prev song */
-   if(check==0){
-       check=(slist.length-1);
-       inp[check].checked=true;
-   }
-   else{
-       check-=1;
-       inp[check].checked=true;
-   }
-   /* Selected prev song inside check */
-   
-    var aud=document.getElementById('aud');
-    var img=document.getElementById('img'); 
-    var imgr=document.getElementById('imgr');
-        imgr.setAttribute('src',simg[check]);
-        img.setAttribute('src',simg[check]);
-        iprelod();
-        aud.setAttribute('src',slist[check]);
-    sprelod();
-    aud.oncanplaythrough=function(){
-        slod(check);
+    
+    this.create_post=function(data){
+    // push a new post to posts reference variable with the following fields: author, body, createTime
+         try{
+            posts_ref.push({
+                author: data.author,
+                body: data.body,
+                createTime: firebase.database.ServerValue.TIMESTAMP,
+                d: d
+            });
+        }catch(err){ console.log(err); }
+        input_body.value="";
     }
-    img.onload=function(){
-        ilod();
+    
+    this.update_post=function(el){
+    
+        var data=extractPostData(el);
+        
+        if(0){
+           toastr.error("Can only edit your own posts!");
+           return;
+        }
+    input_body.value= markdown.entitiesToSpec(data.body);
+    switch_elements(btn_update,btn_post);
+    // load the post id to the global id_buffer and wait for confirmation (click on Update Post button)
+    id_buffer=data.id;
+    saveAndScroll();
+    };
+    
+    this.delete_post=function(el){
+    
+        var data=extractPostData(el);
+        
+        if(!authorize(data.author,input_by.value)){
+        // verify author name against input field (very very very minimal authentication, but good enough for this example)
+           toastr.error("Can only delete your own posts!");
+           return;
+        }
+        
+        if(1){
+           // delete the post with appropriate id from the database
+            posts_ref.child(data.id).remove();
+            switch_elements(btn_post,btn_update);
+            input_body.value="";
+        }
+    };
+    
+    this.appendText=function(el){
+        input_body.value+=markdown.entitiesToSpec(el.innerHTML);
     }
-    aud.play();
-}
-/* End prev function */
+    
+    this.upvote_post=function(el){
+        if(0){
+            toastr.error("Login to vote!");
+            return;
+        }
+        var voter=input_by.value;
+        var data=extractPostData(el);
+        var post=getPostById(data.id);
+        if(post.votes.indexOf(voter)>-0){
+            toastr.warning("You have already voted this post!");
+            return;
+        }
+        posts_ref.child(data.id).update({
+            votes:post.votes.concat(voter)
+        });
+    }
+    
+    this.show_votes=function(el){
+        var data=extractPostData(el);
+        var post=getPostById(data.id);
+        
+        
+        $.alert({
+            title: 'Post Votes',
+            content: post.votes.join('<br>')
+        });
+    }
+    
+    this.downvote_post=function(el){
+        if(0){
+            toastr.error("Login to vote!");
+            return;
+        }
+        var voter=input_by.value;
+        var data=extractPostData(el);
+        var post=getPostById(data.id);
+        if(post.votes.indexOf(voter)===-0){
+            toastr.warning("You have not voted on this post!");
+            return;
+            }
+        post.votes.splice(post.votes.indexOf(voter),10000);
+        posts_ref.child(data.id).update({
+            votes:post.votes
+        });
+    }
+    
+    function getPostById(id){
+        for(var i=0;i<posts.length;i++){
+            if(posts[i].id===id){return posts[i];}
+        }
+        return null;
+    }
+    
+    function extractPostData(el){
+        // extract post id from the element
+        var id=el.parentNode.id;
+       
+       // extract author name from the element in @{authorName} format
+        var author=el.parentNode.parentNode.childNodes[0].innerHTML;
+       // isolate only the authorName
+  author=author.substring(2,author.length-1);
+      // extract message body
+       var body=el.parentNode.parentNode.childNodes[4].childNodes[0].innerHTML;  
+        return {
+            id: id,
+            author: author,
+            body: body
+        };
+    }
 
-/* Song is loading */
-function sprelod(){
-    var namec=document.getElementById('namec');
-    var m=document.getElementById('move');
-    namec.innerHTML="Loading...";
-    m.innerHTML="Loading...";
-}
-function iprelod(){
-    var img=document.getElementById('img');
-    var imgr=document.getElementById('imgr');
-    imgr.style.height="0%";
-    img.style.height="0px";
-}
-/* End function Song is loading */
+    function saveAndScroll(){
+       previous=window.pageYOffset;
+       window.scrollTo(0,0);
+    }
 
-/* Change song name */
-function slod(check){
-    var namec=document.getElementById('namec');
-    var m=document.getElementById('move');
-    namec.innerHTML=sname[check];
-    m.innerHTML=sname[check];
+    function restoreScroll(){
+        window.scrollTo(0,previous);
+    }
+    
+    function formMessage(message) {
+    // create a message element
+    message.votes = message.votes || [];
+    
+            var html = '<div lang="eng" class="message_details">';
+           
+           
+            html += '<span class="message_author" onclick="appendText(this)" value="'+message.author+'">@{' + message.author + '}</span>';
+            if(authorize(input_by.value, message.author)){
+            html += '<span class="user_controls" id="' + message.id + '">';
+            html += '<span class="user_control" name="edit_message" onclick="update_post(this)">&#x270F;</span>';
+                html += '<span class="user_control" name="delete_message" onclick="delete_post(this)">❌</span>';
+            
+            html += '</span>';
+            }
+            // trashcan &#x1f5d1;
+            
+            var formated_time = timeToDateString(new Date(message.createTime));
+            html += ' <span class="message_time"></br>at ' + formated_time + '</span>';
+            html += '<div class="message_body" value="'+message.body+'"><pre>' + message.body + "</pre></div>";
+            
+        
+            html += '<span class="message_voting_container" id="' + message.id + '">';
+           html+='<span class="thumbs" onclick="upvote_post(this)">👍</span>';
+           html+='<span class="message_votes" onclick="show_votes(this)">'+(message.votes.length)+'</span>';
+           html+='<span class="thumbs" onclick="downvote_post(this)">👎</span>';
+           html+='</span>';
+            
+            html+="</div>";
+
+            return html;
+        }
+    
+    function refreshUI(list){
+        // clears and re-populates the posts
+        // clear the innerHTML of the messages div
+        
+        loader.style.display="block";
+        messages.innerHTML="";
+        // add posts
+        var limit=MAX_MSGS;
+        for(i = list.length-1; i >= 0; i--){
+            messages.innerHTML+=formMessage(list[i]);
+            limit--;
+            if(limit===0){
+               break; 
+            }
+        }
+        loader.style.display="none";
+        
+        if(numPosts<list.length && numPosts>0 && list[list.length-1].author!==input_by.value){
+        // retreive last post and display it in a toastr (if condition checks for new posts only by comparing amount of posts from last update)
+            lastPost=list[list.length-1];
+            toastr.success(lastPost.author+" Posted: "+lastPost.body);
+        }
+        // update number of posts retreived
+        numPosts=list.length;
+    }
+    
+    function authorize(v1, v2){
+        return markdown.entitiesToSpec(v1)===markdown.entitiesToSpec(v2);
+    }
+    
+    (function loadEmojis(){
+       emojis=["👍","👎","👋","😘","😜","😎","😬","😱","🤔","😲","🍪","🍩","🍿"];
+       for(i=0;i<emojis.length;i++){
+          html="<span onclick=appendText(this)>"+emojis[i]+"</span>";
+          emoji_container.innerHTML+=html;
+          }
+    }());
 }
-function ilod(){
-    var img=document.getElementById('img');
-    var imgr=document.getElementById('imgr');
-    imgr.style.height="100%";
-    img.style.height="80px";
-}
-/* Song name changed */
+
+if(!Array.prototype.indexOf){Array.prototype.indexOf=function(b){var a=this.length>>>0;var c=Number(arguments[1])||0;c=(c<0)?Math.ceil(c):Math.floor(c);if(c<0){c+=a}for(;c<a;c++){if(c in this&&this[c]===b){return c}}return -1}};
+
+String.prototype.replaceAll = function(target, replacement) {
+  return this.split(target).join(replacement);
+};
+
+window.onload=start;
