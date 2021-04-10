@@ -1,0 +1,328 @@
+body {
+    font-family: serif;
+    padding: 0px;
+    margin: 0px;
+    background-color: #efefef;
+}
+
+#main1{
+    display: block;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(20,20,20);
+    overflow: hidden;
+}
+
+#main1 header{
+    position: absolute;
+    top: 0px;
+    height: 50px;
+    width: 100%;
+    font-size: 30px;
+    font-weight: bolder;
+    text-align: center;
+    text-shadow: 3px 3px rgba(20,20,20,0.9);
+    padding-top: 30px;
+    background-color: rgb(40,40,40,0.4);
+    border-bottom: 1px solid black;
+    color: #eee;
+}
+
+#main1 #songContainer{
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 81px;
+    height: calc(100vh - 81px);
+    width: 100%;
+    background-color: rgb(20,20,20);
+    overflow: auto;
+}
+
+input[type='radio']{
+    -webkit-appearance: none;
+    outline: none;
+    position: relative;
+    height: 50px;
+    margin: 0px;
+    margin-top: 5px;
+    width: 100vw;
+    padding-top: 10px;
+    padding-left: 10px;
+    background-color: rgb(21,21,21);
+    border-bottom: 1px solid #666;
+    border-top: 1px solid #666;
+    font-size: 20px;
+    text-shadow: 2px 2px rgba(20,20,20,0.9);
+    color: #ddd;
+}
+
+input[value='one']::before{
+    content: "Legends never die";
+}
+input[value='one']:checked::before{
+    content: "=> Legends never die";
+}
+input[value='two']::before{
+    content: "Let me love you";
+}
+input[value='two']:checked::before{
+    content: "=> Let me love you";
+}
+input[value='three']::before{
+    content: "Believer";
+}
+input[value='three']:checked::before{
+    content: "=> Believer";
+}
+input[value='four']::before{
+    content: "The world (english cover)";
+}
+input[value='four']:checked::before{
+    content: "=> The world (english cover)";
+}
+input[value='five']::before{
+    content: "Unravel";
+}
+input[value='five']:checked::before{
+    content: "=> Unravel";
+}
+input[value='six']::before{
+    content: "I am kira";
+}
+input[value='six']:checked::before{
+    content: "=> I am kira";
+}
+input[value='seven']::before{
+    content: "Obey me world";
+}
+input[value='seven']:checked::before{
+    content: "=> Ober me world";
+}
+input[value='eight']::before{
+    content: "Kira vs zero";
+}
+input[value='nine']::before{
+    content: "Salvation";
+}
+input[value='nine']:checked::before{
+    content: "=> Salvation";
+}
+
+#main1 #footer1{
+    display: none;
+    position: absolute;
+    bottom: 0px;
+    height: 80px;
+    width: 100%;
+    background-color: rgba(40,40,40,0.9);
+    border-top: 1px solid black;
+}
+#main1 #img{
+    display: block;
+    position: relative;
+    left:0px;
+    float: left;
+    height: 80px;
+    width: 80px;
+}
+#main1 #img:active{
+    height: 76px;
+    width: 76px;
+    padding: 2px;
+}
+#main1 #snamed{
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    left: 80px;
+    height: 80px;
+    white-space: nowrap;
+    width: calc(100vw - 160px);
+    background-color: rgba(40,40,40,0);
+    z-index: 1;
+    overflow: hidden;
+}
+
+#main1 #snamed #move{
+    position: absolute;
+    text-indent: 5px;
+    padding-top: 25px;
+    font-size: 20px;
+    text-shadow: 2px 2px rgba(20,20,20,0.9);
+    color: #ddd;
+    animation-name: mov;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 5s;
+}
+@keyframes mov{
+    from{left: 100%;}
+    to{left: -100%;}
+}
+
+#main1 #footer1 button{
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    clear: both;
+    right: 0px;
+    top: 0px;
+    background-color: rgba(40,40,40,0);
+}
+#main1 #footer1 .fa{
+    padding-left: 5px;
+    font-size: 60px;
+    color: #ddd;
+}
+#main1 #play1{
+    display: none;
+}
+#main1 #pause1{
+    display: block;
+}
+#main2{
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(20,20,20);
+    overflow: hidden;
+}
+
+#main2 .fa{
+    font-size: 60px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #ddd;
+}
+#main2 .fa:active{
+    font-size: 58px;
+    padding-left: 12px;
+}
+#progressbar{
+    position: absolute;
+    bottom: 81px;
+    height: 5px;
+    width: 98vw;
+    margin-left: 1vw;
+    background-color: #666;
+}
+#progress{
+    position: relative;
+    height: 100%;
+    transition: 0.5s;
+    width: 0vw;
+    background-color: #ddd;
+}
+#footer2{
+    position: absolute;
+    bottom: 0px;
+    height: 80px;
+    width: 100vw;
+    background-color: rgba(40,40,40,0.8);
+}
+#imgc{
+    display: block;
+    height: 60vh;
+    width: 60vh;
+    overflow: hidden;
+    margin: 0 auto;
+    margin-top: -5vh;
+    animation-name: rot;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 5s;
+    animation-play-state: paused;
+}
+@keyframes rot{
+    from{transform: rotate(0deg);}
+    to{transform: rotate(360deg);}
+}
+#imgr{
+    display: block;
+    height: 0%;
+    width: 100%;
+    border-radius: 50%;
+}
+#buttons{
+    position: relative;
+    display: block;
+    height: 80px;
+    width: 190px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+#buttons #left{
+    position: absolute;
+    left: 0px;
+    font-size: 70px;
+}
+#main2 #pause2{
+    position: absolute;
+    left: 60px;
+    top: 8px;
+    font-size: 60px;
+}
+#pause2:active{
+    font-size: 57px;
+}
+#main2 #play2{
+    position: absolute;
+    left: 60px;
+    top: 8px;
+    font-size: 60px;
+}
+#play2:active{
+    font-size: 57px;
+}
+
+#buttons #right{
+    position: absolute;
+    right: 0px;
+    font-size: 70px;
+}
+#buttons #right:active{
+    right: 2px;
+}
+#main2 #play2{
+    display: none;
+}
+#main2 #pause2{
+    display: block;
+}
+#namec{
+    display: block;
+    text-align: center;
+    font-size: 25px;
+    color: #ddd;
+    margin-top: 10px;
+}
+
+
+header{
+background:orange;
+height:50px;
+}
+header > ul > li > a{
+text-decoration:none;
+border:none;
+outline:none;
+padding:10px;
+font-size:15px;
+color:white;
+overflow:hidden;
+float:left;
+
+}
+header > ul > li > h1{
+font-size:20px;
+margin-left:700px;
+color:green;
+}
+header > ul{
+list-style-type:none;
+display:flex;
+padding:0;

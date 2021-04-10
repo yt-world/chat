@@ -1,0 +1,74 @@
+<html>
+<head>
+    <title>Music player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="header">
+<ul>
+<li><a href="/home/">Home</a></li>
+<li><a href="/signsignup/">SignIn/SignUp</a></li>
+<li><a href="/channels/">YT Channels</a></li>
+<li><a href="/song/">Music</a></li>
+</ul>
+
+</header>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <div id="main1">
+       
+            My music
+        
+        <div id="songContainer">
+        <audio id="aud"></audio>
+        <form onclick="splay()">
+            <input type="radio" name="songs" value="one" />
+            <input type="radio" name="songs" value="two" />
+            <input type="radio" name="songs" value="three" />
+            <input type="radio" name="songs" value="four" />
+            <input type="radio" name="songs" value="five" />
+            <input type="radio" name="songs" value="six" />
+            <input type="radio" name="songs" value="seven" />
+            <input type="radio" name="songs" value="eight" />
+            <input type="radio" name="songs" value="nine" />
+        </form>
+        </div> 
+        <footer id="footer1">
+            <div onclick="main2()">
+                <img id="img" />
+                <div id="snamed">
+                    <div id="move">
+                    </div>
+                </div>
+            </div>
+            <button>
+                <i onclick="play()" id="play1" class="fa fa-play"></i>
+                <i onclick="pause()" id="pause1" class="fa fa-pause"></i>
+            </button>
+        </footer>
+    </div>
+    <div id="main2">
+        <i onclick="main1()" class="fa fa-angle-left"></i>
+        <div id="imgc">
+            <img id="imgr"/>
+        </div>
+        <div id="namec">
+        </div>
+        <div id="progressbar">
+            <div id="progress">
+            </div>
+        </div>
+        <footer id="footer2">
+            <div id="buttons">
+                <i onclick="prev()" id="left" class="fa fa-caret-left"></i>
+                <i onclick="pause()" id="pause2" class="fa fa-pause"></i>
+                <i onclick="play()" id="play2" class="fa fa-play"></i>
+            <i onclick="next()" id="right" class="fa fa-caret-right"></i>
+            </div>
+        </footer>
+    </div>
+<script src="main.js"></script>s
+</body>
+</html>
