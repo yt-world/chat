@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Firebase</title>
+	<!-- FontAwesome -->
+	<script src="https://kit.fontawesome.com/c9705384ae.js" crossorigin="anonymous"></script>
+	<!-- The core Firebase JS -->
+	<script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+	<!-- Firebase Database-->
+	<script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-database.js"></script>
+	<!-- Local Files -->
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <script defer type="text/javascript" src = "app.js"></script>
+    <!-- Optimized for mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+	<div class = "login">
+		<h1>Talk to the whole world. Anytime. Anywhere.</h1>
+		<img src="https://i.ibb.co/7X1MrGL/undraw-connected-world-wuay.png" alt="undraw-connected-world-wuay" border="0">
+		<form onsubmit="return login()">
+			<label for = "name">Enter your name:</label>
+			<input class = "login-form" type="text" name="name" placeholder="Enter your name" autocomplete="off" required="true">
+			<button class = "start" type="submit" value="Get started">Get started</button>
+
+		</form>
+		
+	</div>
+	<div class = "messenger">
+		<div class = "top-bar">
+			<span>Global Chat</span>
+			<span><i class="fa fa-user-circle"></i><span class = "username">User</span></span>
+		</div>
+		<ul class = "messages"></ul>
+		<form class = "bottom-bar" onsubmit="return sendMessage()">
+			<input type="text" class="message" placeholder="Enter a message..." autocomplete="off" required="true" oninvalid="this.setCustomValidity('You cannot send an empty message')">
+			<button type="submit" value="send"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+		</form>
+	</div>
+</body>
+</html>
