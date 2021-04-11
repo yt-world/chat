@@ -1,7 +1,7 @@
 const firebaseConfig = {
 apiKey: "AIzaSyCr5ZpXwEdWpQL-lZOtjRa5Nz5pY5h349o",
   authDomain: "yt-world.firebaseapp.com",
-  databaseURL: "https://fir-chat-e85ad.firebaseio.com",
+  databaseURL: "https://yt-world.firebaseio.com",
   projectId: "yt-world",
   storageBucket: "yt-world.appspot.com",
   messagingSenderId: "1091241197826",
